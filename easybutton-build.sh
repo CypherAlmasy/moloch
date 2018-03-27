@@ -64,15 +64,12 @@ do
   esac
 done
 
-# Check the existance of sudo
-command -v sudo >/dev/null 2>&1 || { echo >&2 "MOLOCH: sudo is required to be installed"; exit 1; }
-
 MAKE=make
 
 # Installing dependencies
 echo "MOLOCH: Installing Dependencies"
 if [ -f "/etc/redhat-release" ]; then
-  sudo yum -y install wget curl pcre pcre-devel pkgconfig flex bison gcc-c++ zlib-devel e2fsprogs-devel openssl-devel file-devel make gettext libuuid-devel perl-JSON bzip2-libs bzip2-devel perl-libwww-perl libpng-devel xz libffi-devel readline-devel libtool libyaml-devel
+  yum -y install wget curl pcre pcre-devel pkgconfig flex bison gcc-c++ zlib-devel e2fsprogs-devel openssl-devel file-devel make gettext libuuid-devel perl-JSON bzip2-libs bzip2-devel perl-libwww-perl libpng-devel xz libffi-devel readline-devel libtool libyaml-devel
   if [ $? -ne 0 ]; then
     echo "MOLOCH: yum failed"
     exit 1
@@ -80,7 +77,7 @@ if [ -f "/etc/redhat-release" ]; then
 fi
 
 if [ -f "/etc/debian_version" ]; then
-  sudo apt-get -y install wget curl libpcre3-dev uuid-dev libmagic-dev pkg-config g++ flex bison zlib1g-dev libffi-dev gettext libgeoip-dev make libjson-perl libbz2-dev libwww-perl libpng-dev xz-utils libffi-dev libssl-dev libreadline-dev libtool libyaml-dev dh-autoreconf
+  apt-get -y install wget curl libpcre3-dev uuid-dev libmagic-dev pkg-config g++ flex bison zlib1g-dev libffi-dev gettext libgeoip-dev make libjson-perl libbz2-dev libwww-perl libpng-dev xz-utils libffi-dev libssl-dev libreadline-dev libtool libyaml-dev dh-autoreconf
   if [ $? -ne 0 ]; then
     echo "MOLOCH: apt-get failed"
     exit 1
@@ -88,7 +85,7 @@ if [ -f "/etc/debian_version" ]; then
 fi
 
 if [ "$(uname)" = "FreeBSD" ]; then
-    sudo pkg_add -Fr wget curl pcre flex bison gettext e2fsprogs-libuuid glib gmake libexecinfo
+    pkg_add -Fr wget curl pcre flex bison gettext e2fsprogs-libuuid glib gmake libexecinfo
     MAKE=gmake
 fi
 
@@ -224,7 +221,7 @@ if [ $DODAQ -eq 1 ]; then
 
   if [ ! -f "daq-$DAQ/api/.libs/libdaq_static.a" ]; then
     tar zxf daq-$DAQ.tar.gz
-    ( cd daq-$DAQ; ./configure --with-libpcap-includes=$TPWD/libpcap-$PCAP/ --with-libpcap-libraries=$TPWD/libpcap-$PCAP; make; sudo make install)
+    ( cd daq-$DAQ; ./configure --with-libpcap-includes=$TPWD/libpcap-$PCAP/ --with-libpcap-libraries=$TPWD/libpcap-$PCAP; make; make install)
     if [ $? -ne 0 ]; then
       echo "MOLOCH: $MAKE failed"
       exit 1
@@ -268,20 +265,20 @@ fi
 
 if [ $DONODE -eq 1 ] && [ ! -f "$TDIR/bin/node" ]; then
     echo "MOLOCH: Installing node $NODE"
-    sudo mkdir -p $TDIR/bin $TDIR/etc
+    mkdir -p $TDIR/bin $TDIR/etc
     if [ ! -f node-v$NODE-linux-x64.tar.xz ] ; then
         wget https://nodejs.org/download/release/v$NODE/node-v$NODE-linux-x64.tar.xz
     fi
-    sudo tar xfC node-v$NODE-linux-x64.tar.xz $TDIR
-    (cd $TDIR/bin ; sudo ln -s ../node-v$NODE-linux-x64/bin/* .)
+    tar xfC node-v$NODE-linux-x64.tar.xz $TDIR
+    (cd $TDIR/bin ; ln -s ../node-v$NODE-linux-x64/bin/* .)
 fi
 
 if [ $DOINSTALL -eq 1 ]; then
     export PATH=$TDIR/bin:$PATH
-    sudo make install
-    echo "MOLOCH: Installed, now type sudo make config'"
+    make install
+    echo "MOLOCH: Installed, now type make config'"
 else
-    echo "MOLOCH: Now type 'sudo make install' and 'sudo make config'"
+    echo "MOLOCH: Now type 'make install' and 'make config'"
 fi
 
 
