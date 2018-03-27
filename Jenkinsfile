@@ -10,5 +10,10 @@ pipeline {
         sh './easybutton-build.sh'
       }
     }
+    stage('Test') {
+      steps {
+        sh 'cd tests; ./tests.pl'
+      }
+    }
   }
 }
